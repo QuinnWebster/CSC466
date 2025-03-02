@@ -4,6 +4,8 @@ from bleak import BleakScanner
 device_address = "XX:XX:XX:XX:XX:XX"  # Replace with the address of the device we are looking for
 device_name = "Quinn"  # Replace with your device's name
 
+samples_per_second = 10
+duration = 1 #Total time to scan for devices in each iteration
 
 def rssi_to_distance(rssi):
     rssi_ref=-42
@@ -19,31 +21,34 @@ class Device:
 
 signals = []
 
-# Scan for the device for a specified duration
-async def scan_for_device(duration: int, time: int):
+async def scan_for_device(duration: int, time: int, samples_per_second: int):
     print(f"Scanning for devices for {duration} seconds...")
 
-    devices = await BleakScanner.discover(timeout=duration) 
-    
-    for device in devices:
-        # Check if the device name matches
-        if device.name == device_name:
-            # Directly access rssi to avoid the error
-            # print(f"Found device: {device.name} - {device.address} - RSSI value (essentially distance) {device.rssi}")
-            signals.append(Device(device.rssi, time))
+    rssi_values = []
+
+    for _ in range(samples_per_second):
+        devices = await BleakScanner.discover(timeout=duration/samples_per_second)
+
+        for device in devices:
+            if device.name == device_name:
+                rssi_values.append(device.rssi)
+        
+        await asyncio.sleep(1/samples_per_second)
+
+    if rssi_values:
+        avg_rssi = sum(rssi_values) / len(rssi_values)
+        print(f"Iteration {time}: Avg RSSI = {avg_rssi:.2f}")
+        signals.append(Device(avg_rssi, time))
+    else:
+        print(f"Iteration {time}: No device found.")
 
 
-
-
-# Create a new event loop and set it
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
-# Run the scan for 3 seconds
+for time_period in range(5):
 
-for i in range(5):
-
-    loop.run_until_complete(scan_for_device(1, i)) 
+    loop.run_until_complete(scan_for_device(duration, time_period, samples_per_second)) 
 
 for signal in signals:
     print(signal.signal_strength)

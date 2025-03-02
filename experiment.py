@@ -1,22 +1,23 @@
 import numpy as np
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
-# Receiver locations
+
+# Receiver locations, we will divise the room into a grid, and place the recievers at the following coordinates
 receivers = [
-    {'center': (1, 1)},   # Receiver A
-    {'center': (10, 1)},  # Receiver B
-    {'center': (5, 10)}   # Receiver C
+    {'center': (2, 2)},   # Receiver A
+    {'center': (5, 8)},  # Receiver B
+    {'center': (8, 2)}   # Receiver C
 ]
 
-# Array of distances for multiple points
+# Dummy values for the distances, we will use the RSSI values to calculate the distances
+# The distances are the distance from the receiver to the point
+# In format [distance from A, distance from B, distance from C]
 distances = [
-    [6, 10, 3.5],
-    [5,9,4.5],
-    [4,8,5.5],
-    [5, 7, 5],
-    [6, 6, 4.5],
-    [7, 5, 5]
+    [2.5, 9.3, 8.1],
+    [2.3, 8.5, 8.2],
+    [1, 6.8, 6]
 ]
 
 # Error function for optimization
@@ -46,7 +47,7 @@ def plot_points(receivers, distances, calculated_points):
     for i, receiver in enumerate(receivers):
         center_x, center_y = receiver['center']
         plt.scatter(center_x, center_y, color='blue', label=f"Receiver ({center_x}, {center_y})", s=100)
-        
+
         for j, distance_set in enumerate(distances):
             radius = distance_set[i]
             circle = plt.Circle((center_x, center_y), radius, color='blue', fill=False, linestyle='--', alpha=0.5,
@@ -54,7 +55,8 @@ def plot_points(receivers, distances, calculated_points):
             ax.add_artist(circle)
 
     for i, point in enumerate(calculated_points):
-        plt.scatter(point[0], point[1], color='red', label=f"Point {i+1} ({point[0]:.2f}, {point[1]:.2f})", s=150)
+        plt.scatter(point[0], point[1], color='red', 
+                    label=f"Point {i+1} ({point[0]:.2f}, {point[1]:.2f})", s=150)
 
     plt.axhline(0, color='black', linewidth=0.5, linestyle='--')
     plt.axvline(0, color='black', linewidth=0.5, linestyle='--')
@@ -64,8 +66,12 @@ def plot_points(receivers, distances, calculated_points):
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
     plt.axis('equal')
+    
+    # Ensure the minimum axis values are 0
+    ax.set_xlim(left=0)
+    ax.set_ylim(bottom=0)
+
     plt.tight_layout()
     plt.show()
 
-# Plot results
 plot_points(receivers, distances, calculated_points)

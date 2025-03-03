@@ -1,0 +1,16 @@
+Estimated distance: 1.50 meters
+Estimated distance: 1.36 meters
+Estimated distance: 2.64 meters
+Estimated distance: 1.85 meters
+Estimated distance: 1.14 meters
+Estimated distance: 1.43 meters
+Estimated distance: 1.17 meters
+Estimated distance: 1.17 meters
+Estimated distance: 1.08 meters
+Estimated distance: 0.68 meters
+
+[1.61, 1.12, 2.10, 3.11, 2.59, 0.13, 3.16, 2.47, 4.30, 0.10]
+
+[1.58,2.33,3.16,1.47,1.67,1.58,1.44,2.88,3, 3.91]
+
+[1.5,1.36,2.64,1.14, 1.43, 1.17, 1.17, 1.08, 0.68]

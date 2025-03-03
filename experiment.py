@@ -1,23 +1,18 @@
 import numpy as np
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt
 
-
-# Receiver locations, we will divise the room into a grid, and place the recievers at the following coordinates
+# Receiver locations, we will divide the room into a grid, and place the receivers at the following coordinates
 receivers = [
-    {'center': (2, 2)},   # Receiver A
+    {'center': (2, 2)},  # Receiver A
     {'center': (5, 8)},  # Receiver B
     {'center': (8, 2)}   # Receiver C
 ]
 
-# Dummy values for the distances, we will use the RSSI values to calculate the distances
 # The distances are the distance from the receiver to the point
-# In format [distance from A, distance from B, distance from C]
+# In format [distance from A, distance from B, distance from C] for a single point
 distances = [
-    [2.5, 9.3, 8.1],
-    [2.3, 8.5, 8.2],
-    [1, 6.8, 6]
+    [53, 59, 56],  # Distances from Point 1 to Receiver A, B, C
 ]
 
 # Error function for optimization
@@ -26,16 +21,17 @@ def error_function(point, receivers, distances):
     total_error = 0
     for i, receiver in enumerate(receivers):
         center_x, center_y = receiver['center']
-        expected_distance = distances[i]
+        expected_distance = distances[i]  # Extract the expected distance for this receiver
         actual_distance = np.sqrt((x - center_x)**2 + (y - center_y)**2)
-        total_error += (actual_distance - expected_distance)**2
+        total_error += (actual_distance - expected_distance) ** 2
     return total_error
 
 def calculate_points(distances, receivers):
     points = []
-    for distance_set in distances:
-        initial_guess = (5, 5)  # Some midpoint in the graph
-        result = minimize(error_function, initial_guess, args=(receivers, distance_set), method='L-BFGS-B')
+    for i in range(len(distances)):  # Loop through each point's distances (in this case, one point)
+        initial_guess = (5, 5)  # Initial midpoint guess
+        array = distances[i]  # Get distances for this point
+        result = minimize(error_function, initial_guess, args=(receivers, array), method='L-BFGS-B')
         points.append(result.x)
     return points
 
@@ -51,7 +47,7 @@ def plot_points(receivers, distances, calculated_points):
         for j, distance_set in enumerate(distances):
             radius = distance_set[i]
             circle = plt.Circle((center_x, center_y), radius, color='blue', fill=False, linestyle='--', alpha=0.5,
-                                label=f"Distance {radius} for Point {j+1}" if i == 0 else "")  # Avoid duplicate legend entries
+                                label=f"Distance {radius:.2f} for Point {j+1}" if i == 0 else "")  # Avoid duplicate legend entries
             ax.add_artist(circle)
 
     for i, point in enumerate(calculated_points):
@@ -66,7 +62,7 @@ def plot_points(receivers, distances, calculated_points):
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True)
     plt.axis('equal')
-    
+
     # Ensure the minimum axis values are 0
     ax.set_xlim(left=0)
     ax.set_ylim(bottom=0)

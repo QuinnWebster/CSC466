@@ -2,7 +2,7 @@ import asyncio
 from bleak import BleakScanner
 
 def rssi_to_distance(rssi):
-    rssi_ref = -47  # Tune this value
+    rssi_ref = -56  # Tune this value
     path_loss = 3 #Higer value means more noisy room
     print('rssi', rssi)
     return 10 ** ((rssi_ref - rssi) / (10 * path_loss))
@@ -18,6 +18,7 @@ async def scan_for_device(duration: int, samples_per_second: int, total_time: in
     for second in range(total_time):
         for _ in range(samples_per_second):
             devices = await BleakScanner.discover(timeout=duration / samples_per_second)
+            
             for device in devices:
                 if device.name == device_name:
                     rssi_values.append(device.rssi)

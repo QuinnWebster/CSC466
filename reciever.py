@@ -1,37 +1,42 @@
 import asyncio
 from bleak import BleakScanner
 
-class Device:
-    def __init__(self, signal_strength, time):
-            self.signal_strength = signal_strength
-            self.time = time
+async def scan_for_device(num_times: int):
 
+    print("Scanning for devices...")
 
-async def scan_for_device(duration: int, time: int):
-    print(f"Scanning for devices for {duration} seconds...")
+    rssi_signals = []
     
-    for _ in range(10):  
-        devices = await BleakScanner.discover()
+    # Collect RSSI for the device multiple times in each iteration
+    for _ in range(num_times):
+        devices = await BleakScanner.discover(timeout=1/num_times)
 
         for device in devices:
             if device.name == device_name:
-                signals.append(device.rssi)
-        
-        await asyncio.sleep(0.01)  
+                rssi_signals.append(device.rssi)
+    
+    if not rssi_signals:
+        return None
+    average_rssi = sum(rssi_signals) / len(rssi_signals)
+    print(f"Average RSSI: {average_rssi}")
+    return average_rssi
 
 # Global variables
 device_name = "Quinn"  
-samples_per_second = 10
-duration = 1  # Total time to scan for devices in each iteration
 signals = []
 total_time = 20  # Total number of iterations
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+async def main():
 
-for time_period in range(total_time):
-    loop.run_until_complete(scan_for_device(duration, time_period))
+    for _ in range(total_time):
+        rssi = await scan_for_device(5)
+        signals.append(rssi)
 
-# Print all collected signal strengths
-for signal in signals:
-    print(f"Signal strength: {signal:.2f}")
+    print(signals)
+
+# Run the script
+if __name__ == "__main__":
+    asyncio.run(main())
+
+    
+

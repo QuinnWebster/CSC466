@@ -2,13 +2,7 @@ import asyncio
 from bleak import BleakScanner
 
 
-# Global variables
-device_name = "Quinn"
-signals = []
-total_time = 20  # Total number of iterations
-
-
-async def scan_for_device(num_times: int):
+async def scan_for_device(num_times: int, device_name):
 
     print("Scanning for devices...")
 
@@ -30,8 +24,13 @@ async def scan_for_device(num_times: int):
 
 
 async def main():
-    for _ in range(total_time):
-        rssi = await scan_for_device(5)
+    # Global variables
+    device_name = "Quinn"
+    signals = []
+    num_times = 20  # Total number of iterations
+
+    for _ in range(num_times):
+        rssi = await scan_for_device(5, device_name)
         signals.append(rssi)
 
     print(signals)

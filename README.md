@@ -10,4 +10,5 @@ Our team github for our CSC 466 group project
    - This starts tracking RSSI values emmited by the Bluetooth device
    - Results are put into `results.json`
 3. Run `python plotting.py`
-   - This takes all the data from `results.json` and plots the tracking
+   - Copy paste the data from `results.json` from all three tracking devices into `main()` of `plotting.py`
+   - The plots the final triangulated results from tracking

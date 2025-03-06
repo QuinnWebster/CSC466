@@ -1,5 +1,9 @@
 import asyncio
 from bleak import BleakScanner
+import json
+import os
+
+RESULT_PATH = "./results/results.json"
 
 
 async def scan_for_device(num_times: int, device_name):
@@ -26,14 +30,19 @@ async def scan_for_device(num_times: int, device_name):
 async def main():
     # Global variables
     device_name = "Quinn"
-    signals = []
+    rssi_signals = []
     num_times = 20  # Total number of iterations
 
     for _ in range(num_times):
         rssi = await scan_for_device(5, device_name)
-        signals.append(rssi)
+        rssi_signals.append(rssi)
 
-    print(signals)
+    # put results into json
+    os.makedirs(os.path.dirname(RESULT_PATH), exist_ok=True)
+    with open(RESULT_PATH, "w") as f:
+        json.dump(rssi_signals, f)
+
+    print("RSSI signals dumped into JSON at: ", RESULT_PATH)
 
 
 # Run the script

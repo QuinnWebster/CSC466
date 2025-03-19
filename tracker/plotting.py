@@ -7,12 +7,12 @@ from matplotlib import cm
 from matplotlib.colors import Normalize
 from scipy.interpolate import CubicSpline
 
-RSSI_UNIT = -56  # Tune this value to rssi value at one unit distance
+
 PATH_LOSS = 2.9  # Higher value for more noisy room
 
 
-def rssi_to_distance(rssi):
-    rssi_ref = RSSI_UNIT
+def rssi_to_distance(rssi, rssi_unit):
+    rssi_ref = rssi_unit  # RSSI_UNIT
     path_loss = PATH_LOSS
     return 10 ** ((rssi_ref - rssi) / (10 * path_loss))
 
@@ -146,9 +146,9 @@ def compute_errors(calculated_points, expected_path):
 def main():
     # Receiver locations, we will divide the room into a grid, and place the receivers at the following coordinates
     receivers = [
-        {"center": (3, 3)},  # Receiver A
-        {"center": (7, 10)},  # Receiver B
-        {"center": (10, 3)},  # Receiver C
+        {"center": (6, 9)},  # Receiver A
+        {"center": (0, 0)},  # Receiver B
+        {"center": (12, 0)},  # Receiver C
     ]
 
     # In format [distance from A, distance from B, distance from C] for a single point
@@ -157,74 +157,140 @@ def main():
     #     [50, 56, 53],  # Distances from Point 2 to Receiver A, B, C
     # ]
 
-    # Distances from the receivers to the tracked points
-    distances_a = [
-        -66.0,
-        -68.0,
-        -64.0,
-        -60.5,
-        -66.66666666666667,
-        -60.25,
-        -57.75,
-        -54.0,
-        -53.0,
-        -55.5,
-        -63.0,
-        -65.5,
-        -57.0,
-        -58.0,
-        -60.6,
-        -61.6,
-        -62.0,
-        -65.2,
-        -69.0,
-        -75.5,
-    ]
-    distances_b = [
-        -72.0,
-        -72.6,
-        -76.66666666666667,
-        -73.33333333333333,
-        -71.5,
-        -76.5,
-        -66.5,
-        -70.5,
-        -67.0,
-        -73.0,
-        -77.66666666666667,
-        -76.0,
-        -80.0,
-        -79.0,
-        -82.5,
-        -81.0,
-        -80.0,
-        -85.66666666666667,
-        -86.25,
-        -83.0,
-    ]
-    distances_c = [
-        -67.0,
-        -64.0,
-        -67.5,
-        -68.0,
-        -69.25,
-        -68.25,
-        -73.75,
-        -78.33333333333333,
-        -85.25,
-        -85.0,
-        -88.0,
-        -85.5,
-        -87.75,
-        -80.75,
-        -87.5,
-        -87.0,
-        -90.0,
-        -90.0,
-        -89.0,
-        -87.33333333333333,
-    ]
+    UNIT_RSSI_A = -58  # Tune this value to rssi value at one unit distance
+    UNIT_RSSI_B = -58
+    UNIT_RSSI_C = -58
 
+    # Distances from the receivers to the tracked points
+    # truman
+    distances_a = [
+        -84.0,
+        -82.0,
+        -88.0,
+        -79.0,
+        -77.0,
+        -76,
+        -75.0,
+        -77,
+        -78.0,
+        -87.0,
+        -80.5,
+        -75.25,
+        -84.5,
+        -83.0,
+        -81,
+        -80.66666666666667,
+        -84.0,
+        -86,
+        -88.0,
+        -87.5,
+        -82.0,
+        -86.0,
+        -83.5,
+        -77.5,
+        -82.5,
+        -87.0,
+        -84.0,
+        -81.5,
+        -78.0,
+        -82.66666666666667,
+        -87.0,
+        -89.5,
+        -92,
+        -95.0,
+        -93.0,
+        -96.0,
+        -96.0,
+        -96.0,
+        -96.0,
+        -96.0,
+    ]
+    # jack
+    distances_b = [
+        -77.6,
+        -79.0,
+        -71.0,
+        -70.0,
+        -75.0,
+        -80.33333333333333,
+        -79.0,
+        -75.75,
+        -75.0,
+        -75.0,
+        -76.6,
+        -77.0,
+        -80.0,
+        -82.0,
+        -88.5,
+        -85.5,
+        -90.0,
+        -92.0,
+        -89.33333333333333,
+        -95.0,
+        -95.0,
+        -91.0,
+        -91.0,
+        -92.5,
+        -93.0,
+        -92.5,
+        -92.0,
+        -92.0,
+        -97.0,
+        -97.0,
+        -97.0,
+        -97.0,
+        -90.0,
+        -85.5,
+        -84.0,
+        -91.33333333333333,
+        -84.0,
+        -81.0,
+        -85,
+        -88.0,
+    ]
+    # quinn
+    distances_c = [
+        -90.0,
+        -93.5,
+        -91,
+        -90.5,
+        -81.66666666666667,
+        -89.33333333333333,
+        -75.66666666666667,
+        -77.25,
+        -78.5,
+        -78.33333333333333,
+        -81.0,
+        -82.5,
+        -83.4,
+        -82.5,
+        -78.66666666666667,
+        -79.8,
+        -84.0,
+        -88.0,
+        -85.0,
+        -85.0,
+        -83.0,
+        -88.0,
+        -93.0,
+        -89.0,
+        -93.66666666666667,
+        -87.66666666666667,
+        -85.0,
+        -87.25,
+        -85.0,
+        -85.33333333333333,
+        -85.0,
+        -88.33333333333333,
+        -92.4,
+        -94.5,
+        -92,
+        -90.5,
+        -91.33333333333333,
+        -93.33333333333333,
+        -92,
+        -91.0,
+    ]
     # expected_path = [ (5,0), (5,1), (5,2), (5,3), (5,4), (5,5), (5,6), (5,6.5), (5,7), (4.5,7), (4,7), (3,7), (2,7), (1, 7), (0,7) ]
 
     expected_path = [
@@ -254,13 +320,15 @@ def main():
         raise ValueError("The number of distances for each receiver must be the same.")
 
     # list of three distance points. i.e. [[a1, b1, c1], [a2, b2, c2], ...]
-    triangulation_points = [
-        list(values) for values in zip(distances_a, distances_b, distances_c)
-    ]
+
+    distances_a = [rssi_to_distance(distance, UNIT_RSSI_A) for distance in distances_a]
+
+    distances_b = [rssi_to_distance(distance, UNIT_RSSI_B) for distance in distances_b]
+
+    distances_c = [rssi_to_distance(distance, UNIT_RSSI_C) for distance in distances_c]
 
     triangulation_points = [
-        [rssi_to_distance(distance) for distance in point]
-        for point in triangulation_points
+        list(values) for values in zip(distances_a, distances_b, distances_c)
     ]
 
     calculated_points = calculate_points(triangulation_points, receivers)
